@@ -1,7 +1,7 @@
 -- MotorsportRR Quick Car Switcher
 -- F7 = open/close
 -- Up/Down = select
--- Enter = switch
+-- Enter = switch car
 
 local cars = {
   { name = 'Renault Clio 4 GT Line', id = 'acdz_clio_4_gt_line' },
@@ -33,6 +33,21 @@ local upWasDown = false
 local downWasDown = false
 local enterWasDown = false
 
+local function switchCar()
+  local selectedCar = cars[selected]
+
+  if not selectedCar then
+    return
+  end
+
+  ac.reconnectTo({
+    serverIP = '154.252.104.157',
+    serverPort = 9606,
+    serverHttpPort = 8086,
+    carID = selectedCar.id
+  })
+end
+
 function script.update(dt)
 
   local f7 = ac.isKeyDown(ac.KeyIndex.F7)
@@ -47,7 +62,7 @@ function script.update(dt)
 
   if opened then
 
-    -- Up
+    -- UP: previous car
     if up and not upWasDown then
       selected = selected - 1
 
@@ -56,7 +71,7 @@ function script.update(dt)
       end
     end
 
-    -- Down
+    -- DOWN: next car
     if down and not downWasDown then
       selected = selected + 1
 
@@ -65,11 +80,9 @@ function script.update(dt)
       end
     end
 
-    -- Enter: switch car
+    -- ENTER: reconnect with selected car
     if enter and not enterWasDown then
-      ac.reconnectTo({
-        carID = cars[selected].id
-      })
+      switchCar()
     end
 
   end
@@ -80,7 +93,6 @@ function script.update(dt)
   enterWasDown = enter
 end
 
-
 function script.drawUI()
 
   if not opened then
@@ -90,19 +102,31 @@ function script.drawUI()
 
   ui.text('MOTORSPORTRR - QUICK CAR SWITCH')
   ui.separator()
+
   ui.text('UP / DOWN = Select')
-  ui.text('ENTER = Switch')
+  ui.text('ENTER = Switch Car')
   ui.text('F7 = Close')
+
   ui.separator()
 
   for i, item in ipairs(cars) do
+
     if i == selected then
       ui.text('> ' .. item.name .. ' <')
     else
       ui.text('  ' .. item.name)
     end
+
   end
 
   ui.separator()
-  ui.text('Selected: ' .. cars[selected].name)
+
+  local selectedCar = cars[selected]
+
+  ui.text('Selected:')
+  ui.text(selectedCar.name)
+  ui.text('ID: ' .. selectedCar.id)
+
+  ui.separator()
+  ui.text('Press ENTER to switch')
 end
