@@ -1,4 +1,4 @@
--- MotorsportRR Quick Car Switcher
+-- MotorsportRR Quick Car Switcher v2
 -- F7 = open/close
 -- Up/Down = select
 -- Enter = switch car
